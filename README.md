@@ -1,4 +1,4 @@
-# London-housing-price-model-2023-20240
+# London-housing-price-model-2023-2024
 This repository contains a Jupyter notebook that drives an end-to-end analysis of London house prices for 2023–2024.  
 Key steps include:
 - **Data cleaning:** Filtering to 2023–24 sales and filling in missing values thoughtfully.
