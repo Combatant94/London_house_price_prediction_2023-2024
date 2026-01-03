@@ -7,6 +7,7 @@ This repository holds a Jupyter notebook that walks through a complete data pipe
 
 - **Exploratory Data Analysis**  
   Visualizations reveal how prices distribute across London, compare by property type (in £ millions), and highlight the top 10 most expensive postcodes.
+<img width="1189" height="590" alt="image" src="https://github.com/user-attachments/assets/bf91496b-ec6b-4465-bafd-870f61c8d317" />
 
 - **Feature Engineering**  
   To give our model more insight, we create:
