@@ -1,4 +1,6 @@
-# London‐Housing‐Price‐Model 2023–2024
+## London‐Housing‐Price‐Model 2023–2024
+<img width="960" height="640" alt="image" src="https://github.com/user-attachments/assets/8b12692a-271c-41fe-a888-5b593c2ecaaf" />
+
 
 This repository holds a Jupyter notebook that walks through a complete data pipeline for predicting London house prices in 2023–2024. Below is what you’ll find:
 
