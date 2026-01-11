@@ -76,6 +76,9 @@ EDA helped translate raw data into intuition.
 - Central London outcodes (e.g. SW1X, W1K, W8) command **2–4× higher prices**
 
 These insights directly informed later feature engineering and modeling choices.
+<img width="1189" height="590" alt="image" src="https://github.com/user-attachments/assets/bf91496b-ec6b-4465-bafd-870f61c8d317" />
+<img width="581" height="453" alt="image" src="https://github.com/user-attachments/assets/ddc67f8d-7ece-4e54-8296-289ad1e02228" />
+
 
 ---
 
@@ -99,6 +102,9 @@ Instead of relying only on raw columns, I engineered features that reflect **how
 
 - **Energy rating (ordinal encoding)**  
   Turns EPC ratings into an ordered efficiency signal.
+
+
+<img width="859" height="545" alt="image" src="https://github.com/user-attachments/assets/40b5b842-9d38-45d0-8712-37f59ca7f2b6" />
 
 📌 These features significantly improved model stability and interpretability.
 
@@ -166,6 +172,8 @@ I validated assumptions thoroughly:
 - Errors remain stable across price ranges
 - Q–Q plots show near-normal residuals
 - No signs of overfitting
+
+<img width="1189" height="490" alt="image" src="https://github.com/user-attachments/assets/17887b66-96ee-4e30-a583-0a2b607974b5" />
 
 This is a **production-ready modeling approach**, not just a notebook experiment.
 
