@@ -77,7 +77,9 @@ EDA helped translate raw data into intuition.
 
 These insights directly informed later feature engineering and modeling choices.
 <img width="1189" height="590" alt="image" src="https://github.com/user-attachments/assets/bf91496b-ec6b-4465-bafd-870f61c8d317" />
-<img width="581" height="453" alt="image" src="https://github.com/user-attachments/assets/ddc67f8d-7ece-4e54-8296-289ad1e02228" />
+<img width="859" height="545" alt="image" src="https://github.com/user-attachments/assets/40b5b842-9d38-45d0-8712-37f59ca7f2b6" />
+
+
 
 
 ---
@@ -104,7 +106,6 @@ Instead of relying only on raw columns, I engineered features that reflect **how
   Turns EPC ratings into an ordered efficiency signal.
 
 
-<img width="859" height="545" alt="image" src="https://github.com/user-attachments/assets/40b5b842-9d38-45d0-8712-37f59ca7f2b6" />
 
 📌 These features significantly improved model stability and interpretability.
 
@@ -155,6 +156,10 @@ This model isn’t just accurate — it tells a clear story:
 - 🏢 **Flats consistently underperform houses**
 - 🏙️ **Prime postcodes can double prices**
 - 📉 **Very large homes show diminishing returns**
+
+  <img width="589" height="390" alt="image" src="https://github.com/user-attachments/assets/4df28de7-c2f3-475f-aca1-5becf7398739" />
+  <img width="581" height="453" alt="image" src="https://github.com/user-attachments/assets/ddc67f8d-7ece-4e54-8296-289ad1e02228" />
+
 
 These insights can directly inform:
 - Pricing strategy
