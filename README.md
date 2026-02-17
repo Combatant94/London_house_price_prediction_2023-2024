@@ -84,7 +84,7 @@ These insights directly informed later feature engineering and modeling choices.
 
 ---
 
-## 🧠 Feature Engineering (Where the Real Value Is)
+## 🧠 Feature Engineering
 
 Instead of relying only on raw columns, I engineered features that reflect **how buyers think**.
 
@@ -133,7 +133,7 @@ I framed this as a **regression problem**, predicting **log(price)** to handle s
 
 ---
 
-## 📈 Model Performance (Real-World Interpretable)
+## 📈 Model Performance 
 
 | Model | Test R² | Test MAE (£) | Notes |
 |------|--------|-------------|------|
@@ -146,7 +146,7 @@ I framed this as a **regression problem**, predicting **log(price)** to handle s
 
 ---
 
-## 📌 Business Insights (What Recruiters Care About)
+## 📌 Business Insights 
 
 This model isn’t just accurate — it tells a clear story:
 
