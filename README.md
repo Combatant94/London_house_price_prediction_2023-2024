@@ -10,6 +10,8 @@ London’s property market is famously unpredictable. Prices can jump dramatical
 In this project, I set out to answer a practical business question:
 
 > **What actually drives house prices in London today — and can we model it reliably at scale?**
+> 
+> **Live at**: https://combatant94.github.io/London_house_price_prediction_2023-2024/dashboard/
 
 To answer this, I built a complete data pipeline using **~200,000 real London property listings**, applied thoughtful **feature engineering**, and compared **OLS, Ridge, Lasso, and ElasticNet regression models** to balance interpretability, stability, and predictive power.
 
