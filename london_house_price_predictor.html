@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>London House Price Predictor</title>
+<style>
+  :root{
+    --ink:#181C22; --ink-2:#444C5C; --muted:#6B7280;
+    --paper:#FAF8F3; --panel:#F0ECE2; --line:#DDD6C5;
+    --accent:#8A2E1F; --accent-wash:#F3E3DC;
+    --navy:#1F3A5C; --navy-wash:#E4E9EF;
+    --good:#2E6B4C; --good-wash:#E2EEE6;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#EDEAE2; --ink-2:#C8C2B4; --muted:#9A9387;
+      --paper:#15171B; --panel:#1F2228; --line:#30333A;
+      --accent:#E08A6D; --accent-wash:#2B211D;
+      --navy:#8FB3DA; --navy-wash:#1C2733;
+      --good:#7FC79B; --good-wash:#16261D;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#EDEAE2; --ink-2:#C8C2B4; --muted:#9A9387;
+    --paper:#15171B; --panel:#1F2228; --line:#30333A;
+    --accent:#E08A6D; --accent-wash:#2B211D;
+    --navy:#8FB3DA; --navy-wash:#1C2733;
+    --good:#7FC79B; --good-wash:#16261D;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font-family:-apple-system,"Segoe UI",Arial,sans-serif;}
+  body{padding:0 0 40px 0;}
+  header{max-width:900px;margin:0 auto;padding:28px 20px 18px 20px;}
+  h1{font-size:1.6rem;margin:0 0 4px 0;letter-spacing:-0.01em;}
+  .sub{color:var(--ink-2);font-size:0.95rem;max-width:680px;line-height:1.5;}
+  main{max-width:900px;margin:0 auto;padding:0 20px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:22px 22px;margin-bottom:18px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:640px){ .grid{grid-template-columns:1fr;} }
+  label{display:block;font-size:0.78rem;color:var(--muted);margin-bottom:4px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.02em;}
+  select, input[type=number], input[type=range]{
+    width:100%;padding:9px 10px;border-radius:7px;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink);font-size:0.92rem;
+  }
+  .field{margin-bottom:14px;}
+  .result{
+    background:var(--navy-wash);border-radius:10px;padding:22px;text-align:center;margin-top:8px;
+  }
+  .result .price{font-size:2.3rem;font-weight:800;color:var(--navy);}
+  .result .range{color:var(--muted);font-size:0.85rem;margin-top:6px;}
+  .callout{background:var(--accent-wash);border-left:3px solid var(--accent);
+    border-radius:6px;padding:12px 14px;font-size:0.82rem;color:var(--ink-2);margin-bottom:16px;}
+  .callout b{color:var(--ink);}
+  .stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+  .stat{flex:1;min-width:140px;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:14px 16px;}
+  .stat .num{font-size:1.3rem;font-weight:700;}
+  .stat .lbl{color:var(--muted);font-size:0.76rem;margin-top:3px;}
+  footer{max-width:900px;margin:20px auto 0 auto;padding:16px 20px;color:var(--muted);
+    font-size:0.76rem;border-top:1px solid var(--line);}
+  a{color:var(--navy);}
+</style>
+</head>
+<body>
+<header>
+  <h1>London House Price Predictor</h1>
+  <div class="sub">Interactive estimator built on a regression model trained on 157,603 London property sales (2023–2024, Kaggle London House Price dataset). Enter a property's details to get an estimated sale price.</div>
+</header>
+<main>
+
+  <div class="stat-row">
+    <div class="stat"><div class="num">R² = 0.836</div><div class="lbl">Variance explained, held-out test set</div></div>
+    <div class="stat"><div class="num">±£159k</div><div class="lbl">Typical prediction error (MAE)</div></div>
+    <div class="stat"><div class="num">163</div><div class="lbl">London postcode areas covered</div></div>
+  </div>
+
+  <div class="callout">
+    <b>How this works:</b> this uses the exact coefficients from the trained OLS regression (not a simplified approximation) — the same model that scored R² = 0.836 on held-out data in the original analysis. Predictions are illustrative based on 2023–2024 sale prices, with a typical margin of error around £159,000 either way — treat this as a ballpark, not a valuation.
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div class="field">
+        <label>Property type</label>
+        <select id="propertyType"></select>
+      </div>
+      <div class="field">
+        <label>Postcode area (outcode)</label>
+        <select id="outcode"></select>
+      </div>
+      <div class="field">
+        <label>Tenure</label>
+        <select id="tenure"></select>
+      </div>
+      <div class="field">
+        <label>Energy rating</label>
+        <select id="energyRating">
+          <option value="7">A</option><option value="6">B</option>
+          <option value="5" selected>C</option><option value="4">D</option>
+          <option value="3">E</option><option value="2">F</option><option value="1">G</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Bedrooms</label>
+        <input type="number" id="bedrooms" value="2" min="0" max="10">
+      </div>
+      <div class="field">
+        <label>Bathrooms</label>
+        <input type="number" id="bathrooms" value="1" min="0" max="10">
+      </div>
+      <div class="field">
+        <label>Living rooms</label>
+        <input type="number" id="livingRooms" value="1" min="0" max="6">
+      </div>
+      <div class="field">
+        <label>Floor area (sqm)</label>
+        <input type="number" id="floorArea" value="70" min="15" max="1000">
+      </div>
+    </div>
+    <div class="field">
+      <label>Distance from Charing Cross (km): <span id="distVal">8</span> km</label>
+      <input type="range" id="distCenter" min="0" max="30" value="8" step="0.5">
+    </div>
+  </div>
+
+  <div class="result">
+    <div class="lbl" style="color:var(--muted);font-size:0.8rem;">Estimated sale price</div>
+    <div class="price" id="priceOut">£0</div>
+    <div class="range" id="rangeOut"></div>
+  </div>
+
+</main>
+<footer>
+  Model: OLS regression on engineered features (floor area, beds/baths per sqm, distance to centre, property type, postcode outcode, tenure, energy rating), trained on the Kaggle "London House Price Data" dataset (2023–2024 sales), R² = 0.836, test MAE ≈ £159,000.
+  Built by Mohd Nafees — full analysis, feature engineering and model comparison (OLS, Ridge, Lasso, ElasticNet) on
+  <a href="https://github.com/Combatant94/London_house_price_prediction_2023-2024" target="_blank" rel="noopener">GitHub</a>.
+</footer>
+
+<script>
+const COEFS = {"const": 12.82, "bathrooms": 0.1048, "bedrooms": -0.0004, "floorAreaSqM": 0.01, "livingRooms": 0.0476, "beds_per_sqm": 3.8037, "baths_per_sqm": -3.1224, "area_sq": -1.391e-05, "dist_center_km": -0.0558, "energyRating_ordinal": -0.0195, "propertyType_Converted Flat": -0.0946, "propertyType_Detached Bungalow": 0.0569, "propertyType_Detached House": 0.1394, "propertyType_Detached Property": 0.4556, "propertyType_End Terrace Bungalow": 0.0081, "propertyType_End Terrace House": 0.0188, "propertyType_End Terrace Property": 0.0174, "propertyType_Flat/Maisonette": -0.1682, "propertyType_Mid Terrace Bungalow": -0.0486, "propertyType_Mid Terrace House": 0.0306, "propertyType_Mid Terrace Property": 0.2476, "propertyType_Purpose Built Flat": -0.2172, "propertyType_Semi-Detached Bungalow": 0.1088, "propertyType_Semi-Detached House": 0.071, "propertyType_Semi-Detached Property": 0.3961, "propertyType_Terrace Property": 0.0219, "propertyType_Terraced": 0.2547, "propertyType_Terraced Bungalow": 0.0643, "outcode_E10": 0.1179, "outcode_E11": 0.2039, "outcode_E12": 0.0054, "outcode_E13": -0.1913, "outcode_E14": 0.0823, "outcode_E15": -0.0042, "outcode_E16": 0.083, "outcode_E17": 0.2414, "outcode_E18": 0.2361, "outcode_E1W": 0.1172, "outcode_E2": 0.0766, "outcode_E3": 0.0291, "outcode_E4": 0.1708, "outcode_E5": 0.1577, "outcode_E6": -0.1164, "outcode_E7": 0.0071, "outcode_E8": 0.1646, "outcode_E9": 0.1537, "outcode_EC1A": 0.1636, "outcode_EC1M": 0.2308, "outcode_EC1N": 0.0849, "outcode_EC1R": 0.292, "outcode_EC1V": 0.2027, "outcode_EC1Y": 0.0985, "outcode_EC2A": 0.4391, "outcode_EC2M": 0.4329, "outcode_EC2R": 0.4689, "outcode_EC2Y": 0.3986, "outcode_EC3A": 1.0673, "outcode_EC3N": 0.1171, "outcode_EC3R": 0.4423, "outcode_EC4A": 0.0876, "outcode_EC4M": 0.2428, "outcode_EC4R": 0.0078, "outcode_EC4V": 0.1621, "outcode_EC4Y": 0.2248, "outcode_IG8": 3.729e-16, "outcode_N1": 0.1567, "outcode_N10": 0.273, "outcode_N11": 0.1029, "outcode_N12": 0.1546, "outcode_N13": 0.0839, "outcode_N14": 0.2178, "outcode_N15": -0.011, "outcode_N16": 0.1734, "outcode_N17": -0.0819, "outcode_N18": -0.1967, "outcode_N19": 0.1127, "outcode_N2": 0.2777, "outcode_N20": 0.2861, "outcode_N21": 0.2637, "outcode_N22": 0.0758, "outcode_N3": 0.1711, "outcode_N4": 0.1617, "outcode_N5": 0.2519, "outcode_N6": 0.3507, "outcode_N7": 0.0644, "outcode_N8": 0.2015, "outcode_N9": -0.0848, "outcode_NW1": 0.2872, "outcode_NW10": 0.0436, "outcode_NW11": 0.2238, "outcode_NW2": -0.0021, "outcode_NW3": 0.4573, "outcode_NW4": 0.0668, "outcode_NW5": 0.1608, "outcode_NW6": 0.2182, "outcode_NW7": 0.2202, "outcode_NW8": 0.3993, "outcode_NW9": 0.1219, "outcode_SE1": 0.0509, "outcode_SE10": 0.1644, "outcode_SE11": -0.088, "outcode_SE12": -0.031, "outcode_SE13": 0.0195, "outcode_SE14": -0.0901, "outcode_SE15": -0.0222, "outcode_SE16": -0.0041, "outcode_SE17": -0.1184, "outcode_SE18": 0.016, "outcode_SE19": 0.0448, "outcode_SE2": 0.0761, "outcode_SE20": 0.0315, "outcode_SE21": 0.0905, "outcode_SE22": 0.087, "outcode_SE23": 0.0463, "outcode_SE24": 0.0986, "outcode_SE25": -0.0802, "outcode_SE26": 0.0186, "outcode_SE27": 0.0022, "outcode_SE28": -0.0234, "outcode_SE3": 0.1558, "outcode_SE4": 0.0661, "outcode_SE5": -0.0939, "outcode_SE6": -0.0999, "outcode_SE7": -0.0127, "outcode_SE8": -0.0717, "outcode_SE9": 0.0564, "outcode_SW10": 0.5517, "outcode_SW11": 0.1552, "outcode_SW12": 0.2583, "outcode_SW13": 0.4207, "outcode_SW14": 0.3921, "outcode_SW15": 0.1535, "outcode_SW16": -0.04, "outcode_SW17": 0.1951, "outcode_SW18": 0.2454, "outcode_SW19": 0.2605, "outcode_SW1A": 0.5734, "outcode_SW1E": 0.5051, "outcode_SW1H": 0.2343, "outcode_SW1P": 0.3235, "outcode_SW1V": 0.1432, "outcode_SW1W": 0.5955, "outcode_SW1X": 0.9043, "outcode_SW1Y": 0.6866, "outcode_SW2": -0.0193, "outcode_SW20": 0.3467, "outcode_SW3": 0.6045, "outcode_SW4": 0.114, "outcode_SW5": 0.3929, "outcode_SW6": 0.3072, "outcode_SW7": 0.7156, "outcode_SW8": -0.0115, "outcode_SW9": -0.0732, "outcode_W10": 0.2516, "outcode_W11": 0.6047, "outcode_W12": 0.2383, "outcode_W13": 0.3535, "outcode_W14": 0.3302, "outcode_W1B": 0.7831, "outcode_W1D": 0.3485, "outcode_W1F": 0.4563, "outcode_W1G": 0.7433, "outcode_W1H": 0.5046, "outcode_W1J": 0.8918, "outcode_W1K": 0.997, "outcode_W1S": 0.9458, "outcode_W1T": 0.5508, "outcode_W1U": 0.5847, "outcode_W1W": 0.3923, "outcode_W2": 0.3718, "outcode_W3": 0.0896, "outcode_W4": 0.3573, "outcode_W5": 0.3729, "outcode_W6": 0.2442, "outcode_W7": 0.2779, "outcode_W8": 0.7409, "outcode_W9": 0.315, "outcode_WC1A": 0.3225, "outcode_WC1B": 0.4399, "outcode_WC1E": 0.4374, "outcode_WC1H": -0.2341, "outcode_WC1N": 0.1497, "outcode_WC1R": 0.2123, "outcode_WC1V": 0.3576, "outcode_WC1X": 0.1764, "outcode_WC2A": 0.2594, "outcode_WC2B": 0.4063, "outcode_WC2E": 0.4702, "outcode_WC2H": 0.369, "outcode_WC2N": 0.4467, "outcode_WC2R": 0.7063, "tenure_Freehold": 0.0427, "tenure_Leasehold": -0.0177, "tenure_Shared": -0.0866};
+const PROPERTY_TYPES = ["Converted Flat", "Detached Bungalow", "Detached House", "Detached Property", "End Terrace Bungalow", "End Terrace House", "End Terrace Property", "Flat/Maisonette", "Mid Terrace Bungalow", "Mid Terrace House", "Mid Terrace Property", "Purpose Built Flat", "Semi-Detached Bungalow", "Semi-Detached House", "Semi-Detached Property", "Terrace Property", "Terraced", "Terraced Bungalow"];
+const OUTCODES = ["E10", "E11", "E12", "E13", "E14", "E15", "E16", "E17", "E18", "E1W", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "EC1A", "EC1M", "EC1N", "EC1R", "EC1V", "EC1Y", "EC2A", "EC2M", "EC2R", "EC2Y", "EC3A", "EC3N", "EC3R", "EC4A", "EC4M", "EC4R", "EC4V", "EC4Y", "IG8", "N1", "N10", "N11", "N12", "N13", "N14", "N15", "N16", "N17", "N18", "N19", "N2", "N20", "N21", "N22", "N3", "N4", "N5", "N6", "N7", "N8", "N9", "NW1", "NW10", "NW11", "NW2", "NW3", "NW4", "NW5", "NW6", "NW7", "NW8", "NW9", "SE1", "SE10", "SE11", "SE12", "SE13", "SE14", "SE15", "SE16", "SE17", "SE18", "SE19", "SE2", "SE20", "SE21", "SE22", "SE23", "SE24", "SE25", "SE26", "SE27", "SE28", "SE3", "SE4", "SE5", "SE6", "SE7", "SE8", "SE9", "SW10", "SW11", "SW12", "SW13", "SW14", "SW15", "SW16", "SW17", "SW18", "SW19", "SW1A", "SW1E", "SW1H", "SW1P", "SW1V", "SW1W", "SW1X", "SW1Y", "SW2", "SW20", "SW3", "SW4", "SW5", "SW6", "SW7", "SW8", "SW9", "W10", "W11", "W12", "W13", "W14", "W1B", "W1D", "W1F", "W1G", "W1H", "W1J", "W1K", "W1S", "W1T", "W1U", "W1W", "W2", "W3", "W4", "W5", "W6", "W7", "W8", "W9", "WC1A", "WC1B", "WC1E", "WC1H", "WC1N", "WC1R", "WC1V", "WC1X", "WC2A", "WC2B", "WC2E", "WC2H", "WC2N", "WC2R"];
+const TENURES = ["Freehold", "Leasehold", "Shared"];
+
+function populate(id, items, defaultVal){
+  const sel = document.getElementById(id);
+  sel.innerHTML = items.map(i => `<option value="${i}" ${i===defaultVal?'selected':''}>${i}</option>`).join('');
+}
+populate('propertyType', ['(baseline / other)', ...PROPERTY_TYPES], 'Terraced');
+populate('outcode', ['(baseline / other)', ...OUTCODES], 'SW7');
+populate('tenure', ['(baseline / other)', ...TENURES], 'Freehold');
+
+function predict(){
+  const bedrooms = parseFloat(document.getElementById('bedrooms').value) || 0;
+  const bathrooms = parseFloat(document.getElementById('bathrooms').value) || 0;
+  const livingRooms = parseFloat(document.getElementById('livingRooms').value) || 0;
+  const floorArea = parseFloat(document.getElementById('floorArea').value) || 1;
+  const distCenter = parseFloat(document.getElementById('distCenter').value) || 0;
+  const energyRating = parseFloat(document.getElementById('energyRating').value) || 4;
+  const propertyType = document.getElementById('propertyType').value;
+  const outcode = document.getElementById('outcode').value;
+  const tenure = document.getElementById('tenure').value;
+
+  document.getElementById('distVal').textContent = distCenter;
+
+  const beds_per_sqm = bedrooms / floorArea;
+  const baths_per_sqm = bathrooms / floorArea;
+  const area_sq = floorArea * floorArea;
+
+  let logPrice = COEFS['const'];
+  logPrice += COEFS['bathrooms'] * bathrooms;
+  logPrice += COEFS['bedrooms'] * bedrooms;
+  logPrice += COEFS['floorAreaSqM'] * floorArea;
+  logPrice += COEFS['livingRooms'] * livingRooms;
+  logPrice += COEFS['beds_per_sqm'] * beds_per_sqm;
+  logPrice += COEFS['baths_per_sqm'] * baths_per_sqm;
+  logPrice += COEFS['area_sq'] * area_sq;
+  logPrice += COEFS['dist_center_km'] * distCenter;
+  logPrice += COEFS['energyRating_ordinal'] * energyRating;
+
+  if (propertyType !== '(baseline / other)' && COEFS['propertyType_' + propertyType] != null){
+    logPrice += COEFS['propertyType_' + propertyType];
+  }
+  if (outcode !== '(baseline / other)' && COEFS['outcode_' + outcode] != null){
+    logPrice += COEFS['outcode_' + outcode];
+  }
+  if (tenure !== '(baseline / other)' && COEFS['tenure_' + tenure] != null){
+    logPrice += COEFS['tenure_' + tenure];
+  }
+
+  const price = Math.exp(logPrice);
+  const mae = 159000;
+
+  document.getElementById('priceOut').textContent =
+    '£' + Math.round(price).toLocaleString();
+  document.getElementById('rangeOut').textContent =
+    `Typical range: £${Math.round(Math.max(0,price-mae)).toLocaleString()} – £${Math.round(price+mae).toLocaleString()}`;
+}
+
+document.querySelectorAll('select, input').forEach(el => el.addEventListener('input', predict));
+predict();
+</script>
+</body>
+</html>
